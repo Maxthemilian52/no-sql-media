@@ -20,24 +20,20 @@ const thoughtController = {
   
   createThought(req, res){
     Thought.create(req.body)
-      .then((thought) => res.json(thought))
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json(err);
-      });
-  //   User.findOneAndUpdate(
-  //     { _id: req.body.userId },
-  //     { $addToSet: { thoughts: res.id } },
-  //     { runValidators: true, new: true }
-  //   )
-  //   .then((user) =>
-  //   !user
-  //     ? res
-  //         .status(404)
-  //         .json({ message: 'No user found with that ID :(' })
-  //     : res.json(user)
-  // )
-  // .catch((err) => res.status(500).json(err));
+      .then((thought) => {
+        return User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $push: { thoughts: thought._id } },
+          { new: true }
+        )
+      }) .then((user) => 
+        {
+          if(!user){
+          res.status(404).json({ message: "Thought created, no user found!"})
+          }
+          res.json({ message: "Your thought has been created!"})
+        })
+        .catch((err) => res.status(500).json(err));
     },
     deleteThought(req, res) {
         Thought.findOneAndDelete({ _id: req.params.thoughtId })
@@ -92,7 +88,7 @@ const thoughtController = {
             : res.json(reaction)
         )
         .catch((err) => res.status(500).json(err));
-    }
+    },
 };
 
 module.exports = thoughtController;
