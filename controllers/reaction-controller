@@ -1,0 +1,7 @@
+const { reaction } = require("../models")
+
+const reactionController = {
+
+}
+
+module.exports = reactionController;
